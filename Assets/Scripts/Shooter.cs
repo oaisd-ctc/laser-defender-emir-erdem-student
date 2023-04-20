@@ -18,9 +18,15 @@ public class Shooter : MonoBehaviour
     [HideInInspector] public bool isFiring;
 
     Coroutine firingCoroutine;
+    AudioPlayer audioPlayer;
+
+    void Awake()
+    {
+        audioPlayer = FindObjectOfType<AudioPlayer>();
+    }
     void Start()
     {
-        if(useAI)
+        if (useAI)
         {
             isFiring = true;
         }
@@ -46,12 +52,12 @@ public class Shooter : MonoBehaviour
 
     IEnumerator FireContinuously()
     {
-        while(true)
+        while (true)
         {
             GameObject instance = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
 
             Rigidbody2D rb = instance.GetComponent<Rigidbody2D>();
-            if(rb != null)
+            if (rb != null)
             {
                 rb.velocity = transform.up * projectileSpeed;
             }
@@ -61,6 +67,8 @@ public class Shooter : MonoBehaviour
             float timeToNextProjectile = Random.Range(baseFiringRate - firingRateVariance, baseFiringRate + firingRateVariance);
 
             timeToNextProjectile = Mathf.Clamp(timeToNextProjectile, minimumFiringRate, float.MaxValue);
+
+            audioPlayer.PlayShootingClip();
 
             yield return new WaitForSeconds(timeToNextProjectile);
         }
